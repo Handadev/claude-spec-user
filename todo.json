@@ -36,7 +36,7 @@
           "id": "T004",
           "category": "Setup",
           "title": "전역 예외 처리기 구현",
-          "description": "RestControllerAdvice를 사용한 전역 예외 처리 및 에러 응답 표준화",
+          "description": "RestControllerAdvice를 사용한 전역 예외 처리 및 에러 응답 표준화 (CustomException.java)",
           "status": "pending",
           "priority": "P1"
         }

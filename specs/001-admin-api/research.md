@@ -6,6 +6,12 @@
 ## 1. Authentication Strategy
 
 ### Decision: JWT (JSON Web Token) 기반 Stateless 인증
+- accessToken, refreshToken 을 사용한 관리
+- accessToken(1시간), refreshToken(2달)로 관리
+- accessToken 갱신시 refreshToken도 갱신하여 token table에 업데이트함
+- accessToken 갱신시 refreshToken이 존재하는지 검증해야함
+- 관리자 상태가 LOCKED, INACTIVE라면 인증 실패 응답 돌려주고, token table에서 삭제
+- refreshToken에는 최소한의 정보만 들어있음
 
 ### Rationale
 - Spring Boot 4.x에서 표준적으로 지원되는 인증 방식
@@ -162,7 +168,6 @@ public class Menu {
 ### Implementation Details
 ```java
 public class ApiResponse<T> {
-    private boolean success;
     private String message;
     private T data;
     private LocalDateTime timestamp;

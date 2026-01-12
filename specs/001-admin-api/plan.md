@@ -117,7 +117,8 @@ src/main/java/org/specuser/
 ├── exception/
 │   ├── GlobalExceptionHandler.java
 │   ├── BusinessException.java
-│   └── ErrorCode.java
+│   ├── ErrorCode.java
+│   └── CustomException.java
 └── SpecUserApplication.java
 
 src/main/resources/

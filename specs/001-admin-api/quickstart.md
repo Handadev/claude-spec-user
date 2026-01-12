@@ -32,7 +32,8 @@ spring.flyway.locations=classpath:db/migration
 
 # JWT
 jwt.secret=your-256-bit-secret-key-here-make-it-long-enough
-jwt.expiration=3600000
+jwt.accessToken.expiration=3600000
+jwt.refreshToken.expiration=5184000000
 
 # reCAPTCHA
 recaptcha.site-key=your-site-key

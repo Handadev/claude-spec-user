@@ -36,6 +36,17 @@
 │ created_at  │
 │ updated_at  │
 └─────────────┘
+      ▲
+      │
+      │
+      │
+┌─────────────┐
+│    Token    │
+├─────────────┤
+│ admin_id(FK)│
+│ token       │
+│ updated_at  │
+└─────────────┘
 
 ┌─────────────┐
 │    User     │
@@ -201,6 +212,21 @@ INACTIVE ──(90일 경과)──► [Hard Delete]
 
 ---
 
+### 6. Token (관리자 토큰)
+
+관리자의 Refresh Token을 관리합니다.
+
+| Field      | Type         | Constraints                     | Description   |
+|------------|--------------|---------------------------------|---------------|
+| admin_id   | BIGINT       | FK, Admin(id), PK               | 관리자 참조        |
+| token      | TEXT         | NOT NULL                | refresh token |
+| updated_at | DATETIME     | NOT NULL, DEFAULT NOW ON UPDATE | 수정 일시         |
+
+**Indexes:**
+- `idx_token_admin_id`: admin_id (관리자 index 조회)
+
+---
+
 ## Database Schema (DDL)
 
 ```sql
@@ -282,6 +308,17 @@ INSERT INTO role (name, description) VALUES
     ('MANAGER', '관리자. SUBMANAGER/VIEWER 생성 가능, 메뉴/유저 관리'),
     ('SUBMANAGER', '부관리자. 유저 관리만 가능'),
     ('VIEWER', '조회 전용. 데이터 수정 불가');
+
+-- V7__create_role_menu_table.sql
+CREATE TABLE token (
+   admin_id BIGINT NOT NULL,
+   toekn TEXT NOT NULL,
+   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+   PRIMARY KEY (admin_id),
+   CONSTRAINT fk_token_admin FOREIGN KEY (admin_id) REFERENCES admin(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE INDEX idx_token_admin_id ON token(admin_id);
 
 -- 초기 SUPER 관리자 (password: Admin123!@#)
 INSERT INTO admin (email, password, name, role_id, status) VALUES
