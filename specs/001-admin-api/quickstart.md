@@ -12,46 +12,14 @@
 
 ## 1. 로컬 환경 설정
 
-### 1.1 데이터베이스 실행
-
-```bash
-# Docker Compose로 MariaDB 실행
-docker-compose up -d mariadb
-
-# 또는 로컬 MariaDB 사용 시 데이터베이스 생성
-mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS users CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-```
-
-**docker-compose.yml** (프로젝트 루트에 생성):
-```yaml
-version: '3.8'
-services:
-  mariadb:
-    image: mariadb:10.11
-    container_name: specuser-mariadb
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: users
-      MYSQL_USER: specuser
-      MYSQL_PASSWORD: specuser123
-    ports:
-      - "3306:3306"
-    volumes:
-      - mariadb_data:/var/lib/mysql
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-
-volumes:
-  mariadb_data:
-```
-
-### 1.2 애플리케이션 설정
+### 1.1 애플리케이션 설정
 
 **src/main/resources/application-local.properties**:
 ```properties
 # Database
 spring.datasource.url=jdbc:mariadb://localhost:3306/users
-spring.datasource.username=specuser
-spring.datasource.password=specuser123
+spring.datasource.username=handa
+spring.datasource.password=handaDev!1
 
 # JPA
 spring.jpa.hibernate.ddl-auto=validate
@@ -106,6 +74,51 @@ Flyway 마이그레이션 실행 시 자동으로 생성되는 데이터:
 | admin@specuser.com | Admin123!@# | SUPER |
 
 ## 3. API 테스트
+### 공통 응답 형식:
+1. 기본 응답: data object 안에 key - value 형식
+```json
+{
+  "message": "message",
+  "data": {
+    "key": " value"
+  },
+  "timestamp": "2026-01-12T10:00:00"
+}
+```
+2. 목록 응답 형식: data object > content array 안에 key - value 형식
+```json
+{
+  "message": "message",
+  "data": {
+    "content": [
+      {
+        "key": " value"    
+      }
+    ]
+  },
+  "timestamp": "2026-01-12T10:00:00"
+}
+```
+3. 페이지네이션 응답 형식: data object > content array 안에 key - value 형식 \
+data object > page(int), size(int), totalPages(int), totalElements(int), isLast(boolean) 존재
+```json
+{
+  "message": "message",
+  "data": {
+    "content": [
+      {
+        "key": " value"    
+      }
+    ]
+  },
+  "page": 1,
+  "size": 10,
+  "totalPages": 2,
+  "totalElements": 20,
+  "isLast": false,
+  "timestamp": "2026-01-12T10:00:00"
+}
+```
 
 ### 3.1 로그인
 
@@ -255,7 +268,7 @@ curl -X POST http://localhost:8080/api/v1/users/1/activate \
 docker ps
 
 # 로그 확인
-docker logs specuser-mariadb
+docker logs mariadb
 
 # 컨테이너 재시작
 docker-compose restart mariadb
@@ -265,9 +278,9 @@ docker-compose restart mariadb
 
 ```
 {
-  "success": false,
   "message": "토큰이 만료되었습니다",
-  "errorCode": "TOKEN_EXPIRED"
+  "errorCode": "TOKEN_EXPIRED",
+  "timestamp": "2026-01-12T10:00:00"
 }
 ```
 
@@ -277,9 +290,9 @@ docker-compose restart mariadb
 
 ```
 {
-  "success": false,
   "message": "접근 권한이 없습니다",
-  "errorCode": "ACCESS_DENIED"
+  "errorCode": "ACCESS_DENIED",
+  "timestamp": "2026-01-12T10:00:00"
 }
 ```
 
