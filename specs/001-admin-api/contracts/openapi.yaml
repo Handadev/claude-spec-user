@@ -1,0 +1,1029 @@
+openapi: 3.0.3
+info:
+  title: Admin API Server
+  description: 관리자 관리 사이트를 위한 RESTful API
+  version: 1.0.0
+  contact:
+    name: SpecUser Team
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development server
+
+tags:
+  - name: Auth
+    description: 인증 관련 API
+  - name: Admin
+    description: 관리자 관리 API
+  - name: Role
+    description: 권한 관리 API
+  - name: Menu
+    description: 메뉴 관리 API
+  - name: User
+    description: 유저 관리 API
+
+paths:
+  # ==================== AUTH ====================
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: 관리자 로그인
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: 로그인 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: CAPTCHA 필요 (3회 이상 실패)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaptchaRequiredResponse'
+        '401':
+          description: 인증 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '423':
+          description: 계정 잠김
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: 로그아웃
+      operationId: logout
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 로그아웃 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: 현재 로그인한 관리자 정보 조회
+      operationId: getCurrentAdmin
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/AdminResponse'
+
+  /auth/menus:
+    get:
+      tags: [Auth]
+      summary: 현재 관리자의 접근 가능 메뉴 목록
+      operationId: getAccessibleMenus
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/MenuTreeResponse'
+
+  # ==================== ADMIN ====================
+  /admins:
+    get:
+      tags: [Admin]
+      summary: 관리자 목록 조회
+      operationId: getAdmins
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/AdminStatus'
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PagedAdminResponse'
+
+    post:
+      tags: [Admin]
+      summary: 관리자 생성
+      operationId: createAdmin
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminCreateRequest'
+      responses:
+        '201':
+          description: 생성 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/AdminResponse'
+        '403':
+          description: 권한 부족 (MANAGER가 SUPER/MANAGER 생성 시도)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /admins/{id}:
+    get:
+      tags: [Admin]
+      summary: 관리자 상세 조회
+      operationId: getAdmin
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/AdminResponse'
+        '404':
+          description: 관리자 없음
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags: [Admin]
+      summary: 관리자 수정
+      operationId: updateAdmin
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminUpdateRequest'
+      responses:
+        '200':
+          description: 수정 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/AdminResponse'
+
+    delete:
+      tags: [Admin]
+      summary: 관리자 삭제 (Soft Delete)
+      operationId: deleteAdmin
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 삭제 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: 삭제 불가 (마지막 SUPER 또는 자기 자신)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /admins/{id}/unlock:
+    post:
+      tags: [Admin]
+      summary: 관리자 잠금 해제 (SUPER만 가능)
+      operationId: unlockAdmin
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 잠금 해제 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '403':
+          description: SUPER 권한 필요
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ==================== ROLE ====================
+  /roles:
+    get:
+      tags: [Role]
+      summary: 권한 목록 조회
+      operationId: getRoles
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/RoleResponse'
+
+    post:
+      tags: [Role]
+      summary: 권한 생성
+      operationId: createRole
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleCreateRequest'
+      responses:
+        '201':
+          description: 생성 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/RoleResponse'
+
+  /roles/{id}:
+    get:
+      tags: [Role]
+      summary: 권한 상세 조회
+      operationId: getRole
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/RoleResponse'
+
+    put:
+      tags: [Role]
+      summary: 권한 수정
+      operationId: updateRole
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleUpdateRequest'
+      responses:
+        '200':
+          description: 수정 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/RoleResponse'
+
+    delete:
+      tags: [Role]
+      summary: 권한 삭제
+      operationId: deleteRole
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 삭제 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: 삭제 불가 (할당된 관리자 존재 또는 기본 권한)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /roles/{id}/menus:
+    get:
+      tags: [Role]
+      summary: 권한에 할당된 메뉴 목록
+      operationId: getRoleMenus
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/MenuResponse'
+
+    put:
+      tags: [Role]
+      summary: 권한-메뉴 매핑 설정
+      operationId: setRoleMenus
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleMenusRequest'
+      responses:
+        '200':
+          description: 설정 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  # ==================== MENU ====================
+  /menus:
+    get:
+      tags: [Menu]
+      summary: 메뉴 목록 조회 (트리 구조)
+      operationId: getMenus
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/MenuTreeResponse'
+
+    post:
+      tags: [Menu]
+      summary: 메뉴 생성
+      operationId: createMenu
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuCreateRequest'
+      responses:
+        '201':
+          description: 생성 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/MenuResponse'
+
+  /menus/{id}:
+    get:
+      tags: [Menu]
+      summary: 메뉴 상세 조회
+      operationId: getMenu
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/MenuResponse'
+
+    put:
+      tags: [Menu]
+      summary: 메뉴 수정
+      operationId: updateMenu
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuUpdateRequest'
+      responses:
+        '200':
+          description: 수정 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/MenuResponse'
+
+    delete:
+      tags: [Menu]
+      summary: 메뉴 삭제 (하위 메뉴 포함)
+      operationId: deleteMenu
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 삭제 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /menus/reorder:
+    put:
+      tags: [Menu]
+      summary: 메뉴 순서 변경
+      operationId: reorderMenus
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuReorderRequest'
+      responses:
+        '200':
+          description: 순서 변경 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  # ==================== USER ====================
+  /users:
+    get:
+      tags: [User]
+      summary: 유저 목록 조회
+      operationId: getUsers
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/UserStatus'
+        - name: search
+          in: query
+          description: 이름 또는 이메일 검색
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PagedUserResponse'
+
+  /users/{id}:
+    get:
+      tags: [User]
+      summary: 유저 상세 조회
+      operationId: getUser
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/UserResponse'
+
+  /users/{id}/suspend:
+    post:
+      tags: [User]
+      summary: 유저 정지
+      operationId: suspendUser
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 정지 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /users/{id}/activate:
+    post:
+      tags: [User]
+      summary: 유저 정지 해제
+      operationId: activateUser
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 활성화 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
+
+    SizeParam:
+      name: size
+      in: query
+      schema:
+        type: integer
+        default: 20
+        minimum: 1
+        maximum: 100
+
+  schemas:
+    # ========== Enums ==========
+    AdminStatus:
+      type: string
+      enum: [ACTIVE, LOCKED, INACTIVE]
+
+    UserStatus:
+      type: string
+      enum: [ACTIVE, SUSPENDED]
+
+    # ========== Common ==========
+    ApiResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+        errorCode:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    PageInfo:
+      type: object
+      properties:
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+
+    # ========== Auth ==========
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 255
+        password:
+          type: string
+          minLength: 8
+        captchaToken:
+          type: string
+          description: 3회 실패 후 필수
+
+    LoginResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                accessToken:
+                  type: string
+                tokenType:
+                  type: string
+                  example: Bearer
+                expiresIn:
+                  type: integer
+                  description: 초 단위
+
+    CaptchaRequiredResponse:
+      allOf:
+        - $ref: '#/components/schemas/ErrorResponse'
+        - type: object
+          properties:
+            captchaRequired:
+              type: boolean
+              example: true
+            failCount:
+              type: integer
+
+    # ========== Admin ==========
+    AdminCreateRequest:
+      type: object
+      required: [email, password, name, roleId]
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 255
+        password:
+          type: string
+          minLength: 8
+          description: 영문+숫자+특수문자 조합
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+        roleId:
+          type: integer
+          format: int64
+
+    AdminUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+        password:
+          type: string
+          minLength: 8
+        roleId:
+          type: integer
+          format: int64
+
+    AdminResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        email:
+          type: string
+        name:
+          type: string
+        role:
+          $ref: '#/components/schemas/RoleResponse'
+        status:
+          $ref: '#/components/schemas/AdminStatus'
+        lastLoginAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    PagedAdminResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminResponse'
+        page:
+          $ref: '#/components/schemas/PageInfo'
+
+    # ========== Role ==========
+    RoleCreateRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 50
+          pattern: '^[A-Z_]+$'
+        description:
+          type: string
+          maxLength: 255
+
+    RoleUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 50
+          pattern: '^[A-Z_]+$'
+        description:
+          type: string
+          maxLength: 255
+
+    RoleResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    RoleMenusRequest:
+      type: object
+      required: [menuIds]
+      properties:
+        menuIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+
+    # ========== Menu ==========
+    MenuCreateRequest:
+      type: object
+      required: [name, url]
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+        url:
+          type: string
+          maxLength: 255
+          pattern: '^/.*'
+        sortOrder:
+          type: integer
+          minimum: 0
+          default: 0
+        parentId:
+          type: integer
+          format: int64
+          nullable: true
+
+    MenuUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+        url:
+          type: string
+          maxLength: 255
+          pattern: '^/.*'
+        sortOrder:
+          type: integer
+          minimum: 0
+
+    MenuResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        url:
+          type: string
+        sortOrder:
+          type: integer
+        parentId:
+          type: integer
+          format: int64
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    MenuTreeResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        url:
+          type: string
+        sortOrder:
+          type: integer
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/MenuResponse'
+
+    MenuReorderRequest:
+      type: object
+      required: [orders]
+      properties:
+        orders:
+          type: array
+          items:
+            type: object
+            required: [id, sortOrder]
+            properties:
+              id:
+                type: integer
+                format: int64
+              sortOrder:
+                type: integer
+                minimum: 0
+
+    # ========== User ==========
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        email:
+          type: string
+        name:
+          type: string
+        status:
+          $ref: '#/components/schemas/UserStatus'
+        createdAt:
+          type: string
+          format: date-time
+
+    PagedUserResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserResponse'
+        page:
+          $ref: '#/components/schemas/PageInfo'
+
+security:
+  - bearerAuth: []

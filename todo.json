@@ -1,0 +1,575 @@
+{
+  "project": "Admin API Server",
+  "branch": "001-admin-api",
+  "created": "2026-01-12",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "프로젝트 기반 구조 설정",
+      "status": "pending",
+      "tasks": [
+        {
+          "id": "T001",
+          "category": "Setup",
+          "title": "프로젝트 구조 및 패키지 설정",
+          "description": "Spring Boot 프로젝트의 기본 패키지 구조 생성 (entity, repository, service, controller, dto, config)",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T002",
+          "category": "Setup",
+          "title": "데이터베이스 마이그레이션 설정",
+          "description": "Flyway 또는 Liquibase를 사용한 DB 마이그레이션 환경 구성",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T003",
+          "category": "Setup",
+          "title": "공통 응답 형식 정의",
+          "description": "API 응답을 위한 공통 Response DTO 및 에러 응답 형식 정의",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T004",
+          "category": "Setup",
+          "title": "전역 예외 처리기 구현",
+          "description": "RestControllerAdvice를 사용한 전역 예외 처리 및 에러 응답 표준화",
+          "status": "pending",
+          "priority": "P1"
+        }
+      ]
+    },
+    {
+      "id": "phase-2",
+      "name": "권한(Role) 도메인 구현",
+      "status": "pending",
+      "tasks": [
+        {
+          "id": "T005",
+          "category": "Entity",
+          "title": "Role 엔티티 생성",
+          "description": "권한 엔티티 정의 (id, name, description, createdAt, updatedAt)",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T006",
+          "category": "Repository",
+          "title": "RoleRepository 생성",
+          "description": "Role JPA Repository 인터페이스 정의",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T007",
+          "category": "DTO",
+          "title": "Role 관련 DTO 생성",
+          "description": "RoleCreateRequest, RoleUpdateRequest, RoleResponse DTO 정의",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T008",
+          "category": "Service",
+          "title": "RoleService 구현",
+          "description": "권한 CRUD 비즈니스 로직 구현 (조회, 생성, 수정, 삭제)",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T009",
+          "category": "Controller",
+          "title": "RoleController 구현",
+          "description": "권한 관리 REST API 엔드포인트 구현",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T010",
+          "category": "Data",
+          "title": "기본 권한 데이터 초기화",
+          "description": "SUPER, MANAGER, SUBMANAGER, VIEWER 기본 권한 데이터 삽입 스크립트 작성",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T011",
+          "category": "Validation",
+          "title": "권한 삭제 시 관리자 할당 검증",
+          "description": "할당된 관리자가 있는 권한의 삭제를 거부하는 로직 구현",
+          "status": "pending",
+          "priority": "P2"
+        }
+      ]
+    },
+    {
+      "id": "phase-3",
+      "name": "메뉴(Menu) 도메인 구현",
+      "status": "pending",
+      "tasks": [
+        {
+          "id": "T012",
+          "category": "Entity",
+          "title": "Menu 엔티티 생성",
+          "description": "메뉴 엔티티 정의 (id, name, url, sortOrder, parentId, createdAt, updatedAt)",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T013",
+          "category": "Entity",
+          "title": "RoleMenu 연결 엔티티 생성",
+          "description": "권한-메뉴 매핑 엔티티 정의 (roleId, menuId)",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T014",
+          "category": "Repository",
+          "title": "MenuRepository 생성",
+          "description": "Menu JPA Repository 인터페이스 정의 (계층 구조 조회 포함)",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T015",
+          "category": "Repository",
+          "title": "RoleMenuRepository 생성",
+          "description": "RoleMenu JPA Repository 인터페이스 정의",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T016",
+          "category": "DTO",
+          "title": "Menu 관련 DTO 생성",
+          "description": "MenuCreateRequest, MenuUpdateRequest, MenuResponse, MenuTreeResponse DTO 정의",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T017",
+          "category": "Service",
+          "title": "MenuService 구현",
+          "description": "메뉴 CRUD 및 계층 구조 조회 비즈니스 로직 구현",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T018",
+          "category": "Service",
+          "title": "메뉴 순서 변경 로직 구현",
+          "description": "메뉴 순서 재배치 비즈니스 로직 구현",
+          "status": "pending",
+          "priority": "P2"
+        },
+        {
+          "id": "T019",
+          "category": "Controller",
+          "title": "MenuController 구현",
+          "description": "메뉴 관리 REST API 엔드포인트 구현",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T020",
+          "category": "Validation",
+          "title": "상위 메뉴 삭제 시 하위 메뉴 연쇄 삭제",
+          "description": "상위 메뉴 삭제 시 하위 메뉴도 함께 삭제되는 로직 구현",
+          "status": "pending",
+          "priority": "P2"
+        },
+        {
+          "id": "T021",
+          "category": "Service",
+          "title": "권한-메뉴 매핑 관리 서비스 구현",
+          "description": "권한별 접근 가능한 메뉴 설정 및 조회 로직 구현",
+          "status": "pending",
+          "priority": "P1"
+        }
+      ]
+    },
+    {
+      "id": "phase-4",
+      "name": "관리자(Admin) 도메인 구현",
+      "status": "pending",
+      "tasks": [
+        {
+          "id": "T022",
+          "category": "Entity",
+          "title": "Admin 엔티티 생성",
+          "description": "관리자 엔티티 정의 (id, name, email, password, roleId, status, lastLoginAt, createdAt, updatedAt)",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T023",
+          "category": "Enum",
+          "title": "AdminStatus 열거형 생성",
+          "description": "관리자 상태 열거형 정의 (ACTIVE, LOCKED, INACTIVE)",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T024",
+          "category": "Repository",
+          "title": "AdminRepository 생성",
+          "description": "Admin JPA Repository 인터페이스 정의",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T025",
+          "category": "DTO",
+          "title": "Admin 관련 DTO 생성",
+          "description": "AdminCreateRequest, AdminUpdateRequest, AdminResponse, AdminListResponse DTO 정의",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T026",
+          "category": "Service",
+          "title": "AdminService 구현",
+          "description": "관리자 CRUD 비즈니스 로직 구현",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T027",
+          "category": "Service",
+          "title": "비밀번호 암호화 서비스 구현",
+          "description": "BCrypt 등을 사용한 비밀번호 해시 처리 로직 구현",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T028",
+          "category": "Controller",
+          "title": "AdminController 구현",
+          "description": "관리자 관리 REST API 엔드포인트 구현",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T029",
+          "category": "Validation",
+          "title": "마지막 SUPER 관리자 삭제 방지 로직",
+          "description": "마지막 SUPER 권한 관리자 삭제 시 거부하는 검증 로직 구현",
+          "status": "pending",
+          "priority": "P2"
+        },
+        {
+          "id": "T030",
+          "category": "Validation",
+          "title": "자기 자신 삭제 방지 로직",
+          "description": "로그인한 관리자가 자신의 계정을 삭제하려 할 때 거부하는 로직 구현",
+          "status": "pending",
+          "priority": "P2"
+        }
+      ]
+    },
+    {
+      "id": "phase-5",
+      "name": "관리자 인증 시스템 구현",
+      "status": "pending",
+      "tasks": [
+        {
+          "id": "T031",
+          "category": "Config",
+          "title": "Spring Security 설정",
+          "description": "Spring Security 기본 설정 및 보안 필터 체인 구성",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T032",
+          "category": "DTO",
+          "title": "로그인 관련 DTO 생성",
+          "description": "LoginRequest, LoginResponse, TokenResponse DTO 정의",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T033",
+          "category": "Service",
+          "title": "AuthService 구현",
+          "description": "로그인 인증 비즈니스 로직 구현",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T034",
+          "category": "Service",
+          "title": "JWT 토큰 서비스 구현",
+          "description": "JWT 토큰 생성, 검증, 파싱 로직 구현 (선택적: 세션 방식도 가능)",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T035",
+          "category": "Controller",
+          "title": "AuthController 구현",
+          "description": "로그인/로그아웃 REST API 엔드포인트 구현",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T036",
+          "category": "Service",
+          "title": "마지막 로그인 일시 기록 로직",
+          "description": "로그인 성공 시 lastLoginAt 필드 업데이트 로직 구현",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T037",
+          "category": "Service",
+          "title": "30일 미로그인 잠금 처리 로직",
+          "description": "로그인 시 30일 이상 미로그인 관리자(SUPER 제외) 잠금 상태 전환 로직 구현",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T038",
+          "category": "Service",
+          "title": "잠김 상태 관리자 로그인 거부 로직",
+          "description": "잠김 상태의 관리자 로그인 시도 시 거부하는 로직 구현",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T039",
+          "category": "Service",
+          "title": "관리자 잠금 해제 기능 구현",
+          "description": "SUPER 권한 관리자가 다른 관리자의 잠금을 해제하는 기능 구현",
+          "status": "pending",
+          "priority": "P2"
+        },
+        {
+          "id": "T040",
+          "category": "Filter",
+          "title": "인증 필터 구현",
+          "description": "JWT 토큰 검증 및 인증 정보 설정 필터 구현",
+          "status": "pending",
+          "priority": "P1"
+        }
+      ]
+    },
+    {
+      "id": "phase-6",
+      "name": "권한 기반 접근 제어 구현",
+      "status": "pending",
+      "tasks": [
+        {
+          "id": "T041",
+          "category": "Service",
+          "title": "권한별 메뉴 필터링 서비스 구현",
+          "description": "로그인한 관리자의 권한에 따라 접근 가능한 메뉴만 반환하는 로직 구현",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T042",
+          "category": "Controller",
+          "title": "현재 사용자 메뉴 조회 API 구현",
+          "description": "로그인한 관리자의 접근 가능 메뉴 목록 조회 엔드포인트 구현",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T043",
+          "category": "Security",
+          "title": "API 엔드포인트 권한 설정",
+          "description": "각 API 엔드포인트별 접근 권한 설정 (SUPER만, MANAGER 이상 등)",
+          "status": "pending",
+          "priority": "P2"
+        }
+      ]
+    },
+    {
+      "id": "phase-7",
+      "name": "유저(User) 도메인 구현",
+      "status": "pending",
+      "tasks": [
+        {
+          "id": "T044",
+          "category": "Entity",
+          "title": "User 엔티티 생성",
+          "description": "유저 엔티티 정의 (id, name, email, status, createdAt, updatedAt)",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T045",
+          "category": "Enum",
+          "title": "UserStatus 열거형 생성",
+          "description": "유저 상태 열거형 정의 (ACTIVE, SUSPENDED)",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T046",
+          "category": "Repository",
+          "title": "UserRepository 생성",
+          "description": "User JPA Repository 인터페이스 정의 (페이지네이션 지원)",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T047",
+          "category": "DTO",
+          "title": "User 관련 DTO 생성",
+          "description": "UserResponse, UserListResponse, UserStatusUpdateRequest DTO 정의",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T048",
+          "category": "Service",
+          "title": "UserService 구현",
+          "description": "유저 목록 조회 및 상태 변경 비즈니스 로직 구현",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T049",
+          "category": "Controller",
+          "title": "UserController 구현",
+          "description": "유저 관리 REST API 엔드포인트 구현",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T050",
+          "category": "Service",
+          "title": "유저 정지/해제 기능 구현",
+          "description": "유저 상태를 ACTIVE/SUSPENDED로 변경하는 로직 구현",
+          "status": "pending",
+          "priority": "P1"
+        },
+        {
+          "id": "T051",
+          "category": "Feature",
+          "title": "유저 목록 페이지네이션 구현",
+          "description": "Pageable을 사용한 유저 목록 페이지네이션 처리",
+          "status": "pending",
+          "priority": "P1"
+        }
+      ]
+    },
+    {
+      "id": "phase-8",
+      "name": "테스트 코드 작성",
+      "status": "pending",
+      "tasks": [
+        {
+          "id": "T052",
+          "category": "Test",
+          "title": "Role 도메인 단위 테스트",
+          "description": "RoleService 단위 테스트 작성",
+          "status": "pending",
+          "priority": "P2"
+        },
+        {
+          "id": "T053",
+          "category": "Test",
+          "title": "Menu 도메인 단위 테스트",
+          "description": "MenuService 단위 테스트 작성 (계층 구조 포함)",
+          "status": "pending",
+          "priority": "P2"
+        },
+        {
+          "id": "T054",
+          "category": "Test",
+          "title": "Admin 도메인 단위 테스트",
+          "description": "AdminService 단위 테스트 작성",
+          "status": "pending",
+          "priority": "P2"
+        },
+        {
+          "id": "T055",
+          "category": "Test",
+          "title": "Auth 도메인 단위 테스트",
+          "description": "AuthService 단위 테스트 작성 (30일 잠금 로직 포함)",
+          "status": "pending",
+          "priority": "P2"
+        },
+        {
+          "id": "T056",
+          "category": "Test",
+          "title": "User 도메인 단위 테스트",
+          "description": "UserService 단위 테스트 작성",
+          "status": "pending",
+          "priority": "P2"
+        },
+        {
+          "id": "T057",
+          "category": "Test",
+          "title": "통합 테스트 작성",
+          "description": "주요 API 엔드포인트 통합 테스트 작성",
+          "status": "pending",
+          "priority": "P3"
+        }
+      ]
+    },
+    {
+      "id": "phase-9",
+      "name": "마무리 및 문서화",
+      "status": "pending",
+      "tasks": [
+        {
+          "id": "T058",
+          "category": "Config",
+          "title": "Docker Compose 환경 설정",
+          "description": "로컬 개발 환경을 위한 docker-compose.yml 작성 (DB, 캐시 등)",
+          "status": "pending",
+          "priority": "P2"
+        },
+        {
+          "id": "T059",
+          "category": "Docs",
+          "title": "API 문서화",
+          "description": "Swagger/OpenAPI 또는 Spring REST Docs를 사용한 API 문서 생성",
+          "status": "pending",
+          "priority": "P3"
+        },
+        {
+          "id": "T060",
+          "category": "Data",
+          "title": "샘플 데이터 스크립트 작성",
+          "description": "개발 및 테스트용 샘플 데이터 삽입 SQL 스크립트 작성",
+          "status": "pending",
+          "priority": "P3"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "totalTasks": 60,
+    "byPriority": {
+      "P1": 42,
+      "P2": 12,
+      "P3": 6
+    },
+    "byCategory": {
+      "Setup": 4,
+      "Entity": 4,
+      "Enum": 2,
+      "Repository": 5,
+      "DTO": 5,
+      "Service": 14,
+      "Controller": 6,
+      "Validation": 4,
+      "Config": 2,
+      "Security": 1,
+      "Filter": 1,
+      "Feature": 1,
+      "Test": 6,
+      "Data": 2,
+      "Docs": 1
+    }
+  }
+}
